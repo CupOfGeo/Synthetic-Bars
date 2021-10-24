@@ -241,7 +241,12 @@ def generate_out(prompt, temp, length):
         data_json = json.dumps(data)
         temp_url = TEMP_URL + '/items/'
         r = requests.get(temp_url, data=data_json)
-        return r.json()['out']
+        if r.status_code == 200:
+            out = r.json()['out']
+            out = out.replace('//n','/n')
+        else:
+            out = 'API OFFLINE'
+        return out
     else:
         return 'MORE!'
 
