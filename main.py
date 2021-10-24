@@ -235,7 +235,7 @@ def hide_newbutton(n_clicks):
 
 
 def generate_out(prompt, temp, length):
-    TEMP_URL = 'http://e6c1-35-231-144-57.ngrok.io'#os.getenv('API_URL')
+    TEMP_URL = os.getenv('API_URL')
 
     if TEMP_URL:
         data = {'text': prompt, 'temp': temp, 'length': length}
