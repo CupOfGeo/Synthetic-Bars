@@ -6,11 +6,12 @@ from dash.dependencies import Input, Output, State, MATCH, ALL, ClientsideFuncti
 import time
 import json
 import requests
+import os
 import random
 from app import server, app
 
 
-
+# TODO Make new raw_outputs.txt
 raw_outputs = []
 with open('raw_outputs.txt', 'r') as file:
     lines = file.readlines()
@@ -234,13 +235,15 @@ def hide_newbutton(n_clicks):
 
 
 def generate_out(prompt, temp, length):
-    # data = {'text': prompt, 'temp': temp, 'length': length}
-    # data_json = json.dumps(data)
-    # temp_url = 'http://7ec7-34-105-77-128.ngrok.io/items/'
-    # r = requests.get(temp_url, data=data_json)
-    # print(r)
-    # return r.json()['out']
-    return 'MORE!'
+    TEMP_URL = os.getenv('API_URL')
+    if TEMP_URL:
+        data = {'text': prompt, 'temp': temp, 'length': length}
+        data_json = json.dumps(data)
+        temp_url = TEMP_URL + '/items/'
+        r = requests.get(temp_url, data=data_json)
+        return r.json()['out']
+    else:
+        return 'MORE!'
 
 
 if __name__ == "__main__":
