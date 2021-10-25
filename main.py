@@ -79,14 +79,15 @@ app.layout = html.Div([
     html.Div(
         [
             # Main Text
-            dcc.Textarea(id="main-textarea",
-                         draggable='false', rows="10",
-                         value='',
+            html.Div(contentEditable='True' ,id="main-textarea",
+                         children='',
                          style={'resize': 'none', 'overflow': 'auto', 'width': '80%', 'height': '80%',
                                 'display': 'block',
                                 'margin-left': 'auto',
                                 'margin-right': 'auto',
-                                'font-size': '250%'}),
+                                'font-size': '250%',
+                                'border': '1px solid black'}),
+
             # loading wheel
             dcc.Loading(
                 id="loading-wheel",
@@ -167,8 +168,7 @@ app.clientside_callback(
 
 
 # IsMobile styling
-@app.callback([Output('main-textarea', 'rows'),
-               Output('sliders-div', 'style'), ],
+@app.callback(Output('sliders-div', 'style'),
               [Input('div-mobile', 'children')], )
 def style_mobile(is_mobile):
     # print(is_mobile)
@@ -180,17 +180,18 @@ def style_mobile(is_mobile):
         rows = '10'
         style = {'transform': 'scale(2)', 'display': 'block', 'margin-top': '5%', 'margin-left': 'auto',
                  'margin-right': 'auto', 'width': '45%'}
-    return rows, style
+    #return rows, style
+    return style
 
 
 @app.callback(
     [Output('dynamic-button-container', 'children'),
-     Output("main-textarea", "value"),
+     Output("main-textarea", "children"),
      Output("loading-output", "children"),
      Output('session', 'data')],
     Input('gen-button', 'n_clicks'),
     [State('dynamic-button-container', 'children'),
-     State("main-textarea", 'value'),
+     State("main-textarea", 'children'),
      State('temp-slider', 'value'),
      State('length-slider', 'value'),
      State('session', 'data')])
