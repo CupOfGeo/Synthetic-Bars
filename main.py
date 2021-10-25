@@ -79,8 +79,8 @@ app.layout = html.Div([
     html.Div(
         [
             # Main Text
-            html.Div(contentEditable='True' ,id="main-textarea",
-                         children='',
+            dcc.Textarea(id="main-textarea",
+                         value='',
                          style={'resize': 'none', 'overflow': 'auto', 'width': '80%', 'height': '80%',
                                 'display': 'block',
                                 'margin-left': 'auto',
@@ -91,7 +91,7 @@ app.layout = html.Div([
             # loading wheel
             dcc.Loading(
                 id="loading-wheel",
-                children=[html.Div([html.Div(id="loading-output", children='ok')])],
+                children=[html.Div([html.Div(id="loading-output", children='')])],
                 type="circle",
             )
         ]),
@@ -186,26 +186,28 @@ def style_mobile(is_mobile):
 
 @app.callback(
     [Output('dynamic-button-container', 'children'),
-     Output("main-textarea", "children"),
+     Output("main-textarea", "value"),
+     Output("main-textarea", "rows"),
      Output("loading-output", "children"),
      Output('session', 'data')],
     Input('gen-button', 'n_clicks'),
     [State('dynamic-button-container', 'children'),
-     State("main-textarea", 'children'),
+     State("main-textarea", 'value'),
      State('temp-slider', 'value'),
      State('length-slider', 'value'),
      State('session', 'data')])
 def display_newbutton(n_clicks, children, textarea, temp, max_tokens, store_data):
     # on page load
     if n_clicks is None:
-        return children, textarea, '', {'clicks': 0}
+        return children, textarea, '2','', {'clicks': 0}
     else:
         store_data['clicks'] += 1
+        # print('len:', len(textarea))
 
         if textarea == '':
             out = random.choice(raw_outputs)
-            print(len(raw_outputs))
-            print(out)
+            #print(len(raw_outputs))
+            #print(out)
         else:
             out = generate_out(textarea, temp, max_tokens)
 
@@ -219,8 +221,10 @@ def display_newbutton(n_clicks, children, textarea, temp, max_tokens, store_data
         )
         children.append(gen_button)
         print('Generating a new button')
+        rows = out.count('\n')
+        rows = rows + 1
 
-        return children, out, '', store_data
+        return children, out, str(rows), '', store_data
 
 
 @app.callback(
@@ -245,7 +249,7 @@ def generate_out(prompt, temp, length):
         r = requests.get(temp_url, data=data_json)
         if r.status_code == 200:
             out = r.json()['out']
-            print(out)
+            # print(out)
             out = out.replace('\\n','\n')
         else:
             out = 'API OFFLINE'
